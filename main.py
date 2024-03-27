@@ -1,10 +1,12 @@
-import pkg
 import time
 import os
+import pkg
+
 
 def clear_console():
     """Función para limpiar la consola"""
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def print_instrucciones():
     print("Bienvenido al Dilema del Prisionero\r")
@@ -25,12 +27,13 @@ def print_instrucciones():
     time.sleep(1.5)
     print("¡Buena suerte y diviértete!")
 
-def print_game_status(user_name, user_moves, strategy_moves):
+
+def print_game_status(user_name, user_moves, strategy_moves, user_points, strategy_points):
     max_length = max(len(user_moves), len(strategy_moves))
 
-    print("---------------------------------------------")
-    print("                 Movimientos                 ")
-    print("---------------------------------------------")
+    print("-" * 45)
+    print(f'{"Movimientos"}'.center(45))
+    print("-" * 45)
 
     user_moves_aligned = user_moves.ljust(max_length)
     strategy_moves_aligned = strategy_moves.ljust(max_length)
@@ -39,14 +42,21 @@ def print_game_status(user_name, user_moves, strategy_moves):
     len_user = len(user_name)
     user_spaces = " " * (len_t4t - len_user)
 
-    print(f"{user_spaces}{user_name} {user_moves_aligned}")
-    print(f"Tit For Tat {strategy_moves_aligned}")
+    print(f"{user_spaces}{user_name} | {user_moves_aligned}")
+    print(f"Tit For Tat | {strategy_moves_aligned}")
+    print("-" * 45)
+    print(f'{"Puntaje"}'.center(45))
+    print("-" * 45)
+    print(f"{user_spaces}{user_name} | Puntos: {user_points}".center(45))
+    print(f"Tit For Tat | Puntos: {strategy_points}".center(45))
+
 
 def get_user_input(name, user_history):
     print(f'\n {name} ingresa O para cooperar o X para no cooperar')
     user_choice = input('==> ').upper()
     strategy_choice = pkg.tit_for_tat.t4t_strategy(user_history)
     return user_choice, strategy_choice
+
 
 def calculate_score(user_choice, strategy_choice, user_score, strategy_score):
     score_table = {
@@ -59,6 +69,7 @@ def calculate_score(user_choice, strategy_choice, user_score, strategy_score):
     user_score += current_score[0]
     strategy_score += current_score[1]
     return user_score, strategy_score
+
 
 def main():
     clear_console()
@@ -75,9 +86,12 @@ def main():
     user_moves = ''
     strategy_moves = ''
 
-    while round_count < round_max:
+    while True:
         clear_console()
-        print_game_status(user_name, user_moves, strategy_moves)
+        print_game_status(user_name, user_moves, strategy_moves, user_score, strategy_score  )
+
+        if round_count >= round_max:
+            break
 
         user_choice, strategy_choice = get_user_input(user_name, user_history)
         user_history.append(user_choice)
@@ -86,12 +100,11 @@ def main():
         user_moves = ''.join(user_history)
         strategy_moves = ''.join(strategy_history)
 
-        user_score, strategy_score = calculate_score(user_choice, strategy_choice, user_score, strategy_score)
+        user_score, strategy_score = calculate_score(
+            user_choice, strategy_choice, user_score, strategy_score)
 
         round_count += 1
 
-        if round_count >= round_max:
-            break
 
 if __name__ == "__main__":
     main()
